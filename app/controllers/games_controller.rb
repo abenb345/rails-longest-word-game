@@ -20,38 +20,48 @@ def new
   # end
   alphabet = ('A'..'Z').to_a;
 
-  @letters = (10.times.map {alphabet.sample}).join(" ")
+  not_letters = (10.times.map {alphabet.sample})
+  @letters = not_letters.join(" ")
+  @grid = not_letters.join("")
 end
 
 def score
+# ISSUE - uri parse read wont work
+  # raise
+  # @grid = params[:grid]
+
   if params[:word]
 
-    sentence = params[:word].upcase.chars
-    if @letters
-      @grid = @letters.join('')
-    end
+    sentence = params[:word].upcase.chars.to_a
+    # if @letters
+      # @grid = @letters.join("")
+    # end
 
-    sentence.each do |letter|
-      @grid = @grid.sub(letter, '') if @grid.include?(letter)
-    end
+    if params[:grid]
+      # params[:grid] = @letters.join('')
+      sentence.each do |letter|
+        params[:grid] = params[:grid].sub(letter, '') if params[:grid].include?(letter)
+      end
 
-    if @grid.size != 10 - array.size
-      @ans =  "Sorry but #{params[:word]} can't be built out of #{@letters}..."
-    elsif @grid.size == 10 - array.size
-      url = "https://dictionary.lewagon.com/#{params[:word]}"
-      user_serialized = URI.parse(url).read
-      user = JSON.parse(user_serialized)
-      if user[:found]
-        @ans = "Congratulations, #{params[:word]} is a valid English word"
+      if params[:grid].size != 10 - sentence.size
+        @ans =  "Sorry but #{params[:word]} can't be built out of #{@letters}..."
+      elsif params[:grid].size == 10 - sentence.size
+        url = "https://dictionary.lewagon.com/#{params[:word]}"
+        user_serialized = URI.parse(url).read
+        user = JSON.parse(user_serialized)
+        if user[:found]
+          @ans = "Congratulations, #{params[:word]} is a valid English word"
+        else
+          @ans = "Sorry but #{params[:word]} is not an valid English word..."
+        end
+      end
       else
-        @ans = "Sorry but #{params[:word]} is not an valid English word..."
+        @ans = "Enter word"
       end
     end
-  else
-    @ans = "Enter word"
-  end
 
-  # raise
+  #
+  #  raise
 end
 
 def index
